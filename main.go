@@ -52,7 +52,7 @@ func main() {
 
 // Handler
 func search(c echo.Context) error {
-	resp, err := http.Get("https://api.lolicon.app/setu/v2?size=original&size=regular&r18=0")
+	resp, err := http.Get("https://api.lolicon.app/setu/v2?" + c.QueryString())
 	if err != nil {
 		log.Println(err)
 	}
