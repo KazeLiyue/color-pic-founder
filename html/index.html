@@ -12,15 +12,21 @@
         background-color: #d6d6d6;
         max-width: 100%;
       }
+      #tags {
+        width: 300px;
+      }
     </style>
   </head>
 
   <body>
     <div style="margin-bottom: 8px">
-      <label for="tags">Tags:</label>
-      <input id="tags" type="text" value="バーチャルYouTuber" />
+      <label for="keyword">Keyword:</label>
+      <input id="keyword" type="text" value="星街" />
       <input id="r18" type="checkbox" />
       <label for="r18">R18</label>
+      <br />
+      <label for="tags">Tags:</label>
+      <input id="tags" type="text" value="バーチャルYouTuber" />
     </div>
     <button id="click" name="button">點我看新色圖</button>
     <hr />
@@ -39,6 +45,10 @@
           tagsValue.split(',').forEach((v) => {
             params.append('tag', v)
           })
+        }
+        const keywordValue = document.getElementById('keyword').value
+        if (keywordValue) {
+          params.append('keyword', keywordValue)
         }
         fetch('http://localhost:8080/h?' + params.toString())
           .then((resp) => resp.json())
