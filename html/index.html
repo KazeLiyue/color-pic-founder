@@ -1,29 +1,72 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width" />
 
     <title>test</title>
-</head>
 
-<body>
-<button id="click" name="button">點我看新色圖</button>
-<img id="pic" src="" alt="" width="360">
+    <style>
+      .setu {
+        background-color: #d6d6d6;
+        max-width: 100%;
+      }
+      #tags {
+        width: 300px;
+      }
+    </style>
+  </head>
 
+  <body>
+    <div style="margin-bottom: 8px">
+      <label for="keyword">Keyword:</label>
+      <input id="keyword" type="text" value="星街" />
+      <input id="r18" type="checkbox" />
+      <label for="r18">R18</label>
+      <br />
+      <label for="tags">Tags:</label>
+      <input id="tags" type="text" value="バーチャルYouTuber" />
+    </div>
+    <button id="click" name="button">點我看新色圖</button>
+    <hr />
+    <p>Pixiv: <a id="pixivUrl" href="javascript:;" target="_blank">???</a></p>
+    <hr />
+    <img id="pic" class="setu" />
 
-<script>
-    const e = document.getElementById("pic");
-    const c = document.getElementById("click")
-    c.addEventListener("click", function () {
-        fetch("http://localhost:8080/h").then(resp => resp.json()).then(data => {
-            console.log(data.data[0].urls.original)
-            e.src = data.data[0].urls.original
-        })
-    })
-
-
-</script>
-</body>
+    <script>
+      const pic = document.getElementById('pic')
+      const pixivUrl = document.getElementById('pixivUrl')
+      document.getElementById('click').addEventListener('click', function () {
+        const params = new URLSearchParams()
+        params.append('r18', document.getElementById('r18').checked ? '1' : '0')
+        const tagsValue = document.getElementById('tags').value
+        if (tagsValue) {
+          tagsValue.split(',').forEach((v) => {
+            params.append('tag', v)
+          })
+        }
+        const keywordValue = document.getElementById('keyword').value
+        if (keywordValue) {
+          params.append('keyword', keywordValue)
+        }
+        fetch('http://localhost:8080/h?' + params.toString())
+          .then((resp) => resp.json())
+          .then((data) => {
+            if (data.data.length === 0) return alert('未找到符合條件的色圖')
+            pixivUrl.href = 'https://www.pixiv.net/artworks/' + data.data[0].pid
+            pixivUrl.innerText = pixivUrl.href
+            pic.width = data.data[0].width
+            pic.src = ''
+            const urls = data.data[0].urls
+            if (urls.original) pic.src = urls.original
+            else if (urls.regular) pic.src = urls.regular
+            else if (urls.small) pic.src = urls.small
+            else if (urls.thumb) pic.src = urls.thumb
+            else if (urls.mini) pic.src = urls.mini
+            else alert('找不到图片')
+          })
+      })
+    </script>
+  </body>
 </html>

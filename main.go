@@ -2,11 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type Hen struct {
@@ -24,8 +25,11 @@ type Hen struct {
 		Ext        string   `json:"ext"`
 		UploadDate int64    `json:"uploadDate"`
 		Urls       struct {
-			Original string `json:"original"`
-			Regular  string `json:"regular"`
+			Original string `json:"original,omitempty"`
+			Regular  string `json:"regular,omitempty"`
+			Small    string `json:"small,omitempty"`
+			Thumb    string `json:"thumb,omitempty"`
+			Mini     string `json:"mini,omitempty"`
 		} `json:"urls"`
 	} `json:"data"`
 }
@@ -48,7 +52,7 @@ func main() {
 
 // Handler
 func search(c echo.Context) error {
-	resp, err := http.Get("https://api.lolicon.app/setu/v2?size=original&size=regular&r18=0")
+	resp, err := http.Get("https://api.lolicon.app/setu/v2?" + c.QueryString())
 	if err != nil {
 		log.Println(err)
 	}
