@@ -1,72 +1,107 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="viewport" content="width=device-width" />
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width"/>
 
     <title>test</title>
 
     <style>
-      .setu {
-        background-color: #d6d6d6;
-        max-width: 100%;
-      }
-      #tags {
-        width: 300px;
-      }
+        .setu {
+            background-color: #d6d6d6;
+            max-width: 100%;
+        }
+
+        #tags {
+            width: 300px;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
-    <div style="margin-bottom: 8px">
-      <label for="keyword">Keyword:</label>
-      <input id="keyword" type="text" value="星街" />
-      <input id="r18" type="checkbox" />
-      <label for="r18">R18</label>
-      <br />
-      <label for="tags">Tags:</label>
-      <input id="tags" type="text" value="バーチャルYouTuber" />
-    </div>
-    <button id="click" name="button">點我看新色圖</button>
-    <hr />
-    <p>Pixiv: <a id="pixivUrl" href="javascript:;" target="_blank">???</a></p>
-    <hr />
-    <img id="pic" class="setu" />
-
-    <script>
-      const pic = document.getElementById('pic')
-      const pixivUrl = document.getElementById('pixivUrl')
-      document.getElementById('click').addEventListener('click', function () {
+<body>
+<!--  分割一個內容區塊-->
+<div style="margin-bottom: 8px">
+    <!--        寫一個標籤，關聯id keyword-->
+    <label for="keyword">Keyword:</label>
+    <!--        寫一個可輸入的視窗id為keyword，類型為文字，預設輸入為星街-->
+    <input id="keyword" type="text" value="星街"/>
+    <!--        寫一個可輸入的視窗id為r18，類行為打勾方塊-->
+    <input id="r18" type="checkbox"/>
+    <!--        寫一個標籤，關聯id r18-->
+    <label for="r18">R18</label>
+    <!--    空一行-->
+    <br/>
+    <!--        寫一個標籤，關聯id tags-->
+    <label for="tags">Tags:</label>
+    <!--        寫一個可輸入的視窗id為r18，類行為文字，預設輸入為バーチャルYouTuber-->
+    <input id="tags" type="text" value="バーチャルYouTuber"/>
+</div>
+<!--寫一個按鈕id為click-->
+<button id="click" name="button">點我看新色圖</button>
+<!--寫入一個段落-->
+<hr/>
+<!--p為文本的一個段落，id為pixivUrl，a元素使用href使用JS，target如果此文檔可以安全地顯示，則需要一個新的未命名窗口或標籤來顯示鏈接的內容。如果用戶代理不支持多個窗口/選項卡-->
+<p>Pixiv: <a id="pixivUrl" href="javascript:" target="_blank">???</a></p>
+<hr/>
+<!--寫一個圖片顯示，id為pic，樣式使用setu-->
+<img id="pic" class="setu"/>
+<!--javascript-->
+<script>
+    //定義一個名為pic的常量，取id為pic
+    const pic = document.getElementById('pic')
+    //定義一個名為pixivUrl的常量，取id為pixivUrl
+    const pixivUrl = document.getElementById('pixivUrl')
+    //監聽名為click的id
+    document.getElementById('click').addEventListener('click', function () {
+        //定義一個個名為params的常量使用URLSearchParams的方法，接口定義了一些實用的方法來處理 URL 的查詢字符串
         const params = new URLSearchParams()
+        //插入一個指定的鍵/值作為新的搜索參數，取id為r18，類型為checked有或無
         params.append('r18', document.getElementById('r18').checked ? '1' : '0')
+        //定義一個名為tagsValu的常量，取id為tags，類型為值
         const tagsValue = document.getElementById('tags').value
+        //這段暫時不懂
         if (tagsValue) {
-          tagsValue.split(',').forEach((v) => {
-            params.append('tag', v)
-          })
+            //這段暫時不懂
+            tagsValue.split(',').forEach((v) => {
+                //為URLSearchParams的一個方法，用於插入一個新的搜尋參數，第一個參數為需要插入搜索參數的鍵名，第二個參數為需要插入搜索參數的值
+                params.append('tag', v)
+            })
         }
+        //定義一個名為keywordValue的常量，取id為keyword
         const keywordValue = document.getElementById('keyword').value
+        //這段暫時不懂
         if (keywordValue) {
-          params.append('keyword', keywordValue)
+            //為URLSearchParams的一個方法，用於插入一個新的搜尋參數，第一個參數為需要插入搜索參數的鍵名，第二個參數為需要插入搜索參數的值
+            params.append('keyword', keywordValue)
         }
+        //使用fetch方法取得訪問一個網址並使用toString方法用於返回URL中的查詢字符串
         fetch('http://localhost:8080/h?' + params.toString())
-          .then((resp) => resp.json())
-          .then((data) => {
-            if (data.data.length === 0) return alert('未找到符合條件的色圖')
-            pixivUrl.href = 'https://www.pixiv.net/artworks/' + data.data[0].pid
-            pixivUrl.innerText = pixivUrl.href
-            pic.width = data.data[0].width
-            pic.src = ''
-            const urls = data.data[0].urls
-            if (urls.original) pic.src = urls.original
-            else if (urls.regular) pic.src = urls.regular
-            else if (urls.small) pic.src = urls.small
-            else if (urls.thumb) pic.src = urls.thumb
-            else if (urls.mini) pic.src = urls.mini
-            else alert('找不到图片')
-          })
-      })
-    </script>
-  </body>
+            .then((resp) => resp.json())
+            .then((data) => {
+                //如果data.data的長度為0就返回一個錯誤內容顯示未找到符合條件的色圖
+                if (data.data.length === 0) return alert('未找到符合條件的色圖')
+                //URL.href是一個完整的 URL 的 USVString值並在後面連接data.data.pid的值
+                pixivUrl.href = 'https://www.pixiv.net/artworks/' + data.data[0].pid
+                //使用URL.innerText顯示URL.href的值
+                pixivUrl.innerText = pixivUrl.href
+                //使用width改變pic的顯示大小
+                pic.width = data.data[0].width
+                //使用src輸入圖片
+                pic.src = ''
+                //定義一個名為urls的常量是data.data.urls的值
+                const urls = data.data[0].urls
+                //如果urls.original有值則pic.src等於urls.original
+                if (urls.original) pic.src = urls.original
+                //如果urls.original沒有值則pic.src等於urls.regular
+                else if (urls.regular) pic.src = urls.regular
+                else if (urls.small) pic.src = urls.small
+                else if (urls.thumb) pic.src = urls.thumb
+                else if (urls.mini) pic.src = urls.mini
+                //如果如果urls.mini沒有值則顯示一個錯誤，找不到圖片
+                else alert('找不到图片')
+            })
+    })
+</script>
+</body>
 </html>
